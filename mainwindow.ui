@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1048</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,78 +20,520 @@
       <property name="title">
        <string/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_20">
        <item>
-        <widget class="QGroupBox" name="groupBox_8">
+        <widget class="QGroupBox" name="groupBox_24">
          <property name="title">
           <string/>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QGroupBox" name="groupBox_9">
+           <widget class="QGroupBox" name="groupBox_8">
             <property name="title">
-             <string/>
+             <string>Global Setting</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QCheckBox" name="cbReplace">
-               <property name="text">
-                <string>Automaticly Replace</string>
+              <widget class="QGroupBox" name="groupBox_18">
+               <property name="title">
+                <string/>
                </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_9">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <item>
+                    <widget class="QCheckBox" name="cbReplace">
+                     <property name="text">
+                      <string>Automatically Replace</string>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="bReplace">
+                     <property name="text">
+                      <string>Replace File</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_11">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <item>
+                    <widget class="QCheckBox" name="cbDeleteKMD">
+                     <property name="text">
+                      <string>Force Delete KMD File Berfore Building</string>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_14">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_13">
+                   <item>
+                    <widget class="QLabel" name="label_5">
+                     <property name="text">
+                      <string>Architecture</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="cbBitType">
+                     <property name="currentIndex">
+                      <number>1</number>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>32Bit</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>64Bit</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>All</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_10">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QRadioButton" name="rbDebug">
+                     <property name="text">
+                      <string>Debug</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="rbRelease">
+                     <property name="text">
+                      <string>Release</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="bReplace">
-               <property name="text">
-                <string>Replace File</string>
+              <widget class="QGroupBox" name="groupBox_19">
+               <property name="title">
+                <string/>
                </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_20">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_16">
+                   <item>
+                    <widget class="QLabel" name="label_7">
+                     <property name="text">
+                      <string>Firmware Version</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="cbFW">
+                     <property name="currentIndex">
+                      <number>1</number>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>116</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>119</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_21">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_17">
+                   <item>
+                    <widget class="QCheckBox" name="cbUNIQ">
+                     <property name="text">
+                      <string>Support Universal Queue</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_23">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_18">
+                   <item>
+                    <widget class="QCheckBox" name="cbPVR">
+                     <property name="text">
+                      <string>Suppport Pvrtune</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_22">
+                  <property name="title">
+                   <string/>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_19">
+                   <item>
+                    <widget class="QCheckBox" name="cbSTAT">
+                     <property name="text">
+                      <string>Enable process states</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_11">
+           <widget class="QGroupBox" name="groupBox_16">
             <property name="title">
-             <string/>
+             <string>Path</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QCheckBox" name="cbDeleteKMD">
-               <property name="text">
-                <string>Force Delete KMD File Berfore Building</string>
+              <widget class="QGroupBox" name="groupBox_2">
+               <property name="title">
+                <string/>
                </property>
-               <property name="checked">
-                <bool>true</bool>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Project Path</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbProjectPath"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bProjectPathBrowser">
+                  <property name="maximumSize">
+                   <size>
+                    <width>30</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_3">
+               <property name="title">
+                <string/>
                </property>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Target Path</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbTargetPath"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bTargetPathBrowser">
+                  <property name="maximumSize">
+                   <size>
+                    <width>30</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_10">
+           <widget class="QGroupBox" name="groupBox_17">
             <property name="title">
-             <string/>
+             <string>Quick Build</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
-              <widget class="QRadioButton" name="rbDebug">
-               <property name="text">
-                <string>Debug</string>
+              <widget class="QGroupBox" name="groupBox_4">
+               <property name="title">
+                <string>G0M</string>
                </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QPushButton" name="bG0MBuild">
+                  <property name="text">
+                   <string>Build G0M</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bG0MUMDBuild">
+                  <property name="text">
+                   <string>Build G0M_UMD</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bG0MKMDBuild">
+                  <property name="text">
+                   <string>Build G0M_KMD</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="rbRelease">
+              <widget class="QGroupBox" name="groupBox_5">
+               <property name="title">
+                <string>G3</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QPushButton" name="bG3Build">
+                  <property name="text">
+                   <string>Build G3</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bG3UMDBuild">
+                  <property name="text">
+                   <string>Build G3_UMD</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bG3KMDBuild">
+                  <property name="text">
+                   <string>Build G3_KMD</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_6">
+               <property name="title">
+                <string>FantasyPanel</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QPushButton" name="bG0MPanelBuild">
+                  <property name="text">
+                   <string>Build Panel_G0M</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bG3PanelBuild">
+                  <property name="text">
+                   <string>Build Panel_G3</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_7">
+            <property name="title">
+             <string>Custom Build</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QGroupBox" name="groupBox_12">
+               <property name="title">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>Build Type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbBuildType">
+                  <property name="currentIndex">
+                   <number>2</number>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>GPU Driver</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>FantasyPanel</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>All</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_13">
+               <property name="title">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>GPU Model</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbGPUModel">
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>G0M</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>G3</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_15">
+               <property name="title">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Driver Type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="cbDriverType">
+                  <property name="currentIndex">
+                   <number>2</number>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>UMD</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>KMD</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>All</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="bManuallyBuild">
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
-                <string>Release</string>
+                <string>Build Custom</string>
                </property>
               </widget>
              </item>
@@ -102,210 +544,27 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="gbLog">
          <property name="title">
-          <string/>
+          <string>Log</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Project Path</string>
+           <widget class="QTextEdit" name="txtLog">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>0</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="cbProjectPath"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bProjectPathBrowser">
-            <property name="text">
-             <string>...</string>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string/>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Target Path</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="bTargetPath"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bTargetPathBrowser">
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="title">
-          <string>G0M</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QPushButton" name="bG0MBuild">
-            <property name="text">
-             <string>G0M</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bG0MUMDBuild">
-            <property name="text">
-             <string>G0M_UMD</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bG0MKMDBuild">
-            <property name="text">
-             <string>G0M_KMD</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>G3</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QPushButton" name="bG3Build">
-            <property name="text">
-             <string>G3</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bG3UMDBuild">
-            <property name="text">
-             <string>G3_UMD</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bG3KMDBuild">
-            <property name="text">
-             <string>G3_KMD</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="title">
-          <string>FantasyPanel</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QPushButton" name="bG0MPanelBuild">
-            <property name="text">
-             <string>Panel_G0M</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bG3PanelBuild">
-            <property name="text">
-             <string>Panel_G3</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>Custom</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QGroupBox" name="groupBox_12">
-            <property name="title">
-             <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Build Type</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="cbBuildType">
-               <item>
-                <property name="text">
-                 <string>GPU Driver</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>FantasyPanel</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_13">
-            <property name="title">
-             <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_11">
-             <item>
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>GPU Model</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="cbGPUModel">
-               <item>
-                <property name="text">
-                 <string>G0M</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>G3</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bManuallyBuild">
-            <property name="text">
-             <string>Build</string>
+            <property name="readOnly">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -322,7 +581,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1048</width>
      <height>17</height>
     </rect>
    </property>
