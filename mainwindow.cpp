@@ -226,6 +226,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
     }
 
     setButtonState(false);
+    ui->bClear->click();
     // ========== GPU Driver Logic ==========
     if (isGPU) {
         // UMD logic (simplified by merging 32/64-bit handling)

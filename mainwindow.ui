@@ -431,7 +431,7 @@
                 <item>
                  <widget class="QComboBox" name="cbBuildType">
                   <property name="currentIndex">
-                   <number>2</number>
+                   <number>0</number>
                   </property>
                   <item>
                    <property name="text">
