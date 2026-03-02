@@ -27,9 +27,10 @@ public:
     /**
      * @brief Execute multiple commands asynchronously (non-blocking)
      * @param commands List of commands to execute (in execution order)
+ * @param Path List of files to copy (in strict execution order)
      * @param workingDir Working directory for command execution (empty = current directory)
      */
-    void executeMultiCommandsAsync(const QStringList& commands, const QString& workingDir = "");
+    void executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, const QString& workingDir = "");
 
     /**
      * @brief Set log file path for persistent log storage
@@ -146,16 +147,21 @@ private:
      */
     QStringList parseCmakeArguments(const QString& cmd);
 
+    bool copyFileWithQt(const QString &srcFile, const QString &targetDir, QString &errorMsg);
+
+    bool executeCopyCmds(QList<QPair<QString, QString> > pendingCopyTasks);
+
     QProcess* m_process;          // Single process instance (only one command runs at a time)
     QString m_logFilePath;        // Path to persistent log file
     QString m_logFileFolder;
-    QStringList m_asyncCmds;      // List of commands to execute (preserves input order)
-    QString m_asyncWorkingDir;    // Working directory for command execution
-    int m_currentAsyncCmdIdx;     // Index of currently executing command (0-based)
-    int m_maxLogLines;            // Maximum log lines (prevent UI/memory issues)
     QString m_currentCmdStdout;   // Stdout buffer for current command
     QString m_currentCmdStderr;   // Stderr buffer for current command
+    QString m_asyncWorkingDir;    // Working directory for command execution
+    QStringList m_asyncCmds;      // List of commands to execute (preserves input order)
+    int m_currentAsyncCmdIdx;     // Index of currently executing command (0-based)
+    int m_maxLogLines;            // Maximum log lines (prevent UI/memory issues)
     bool m_isExecuting;           // Execution state flag (prevent concurrent execution)
+    QList<QPair<QString, QString>> m_pendingCopyTasks;
 };
 
 #endif // COMMANDEXECUTOR_H

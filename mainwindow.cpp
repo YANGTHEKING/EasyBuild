@@ -71,6 +71,9 @@ void MainWindow::connectSignalsAndSlots()
     connect(ui->bLogFile, &QPushButton::clicked, this, [=]() {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_executor->logFileFolder()));
     });
+    connect(ui->bReplace, &QPushButton::clicked, this, [=]() {
+
+    });
 
     connect(ui->cbProjectPath, &QComboBox::currentTextChanged, this, &MainWindow::setProjectPath);
     connect(ui->cbTargetPath, &QComboBox::currentTextChanged, this, &MainWindow::setTargetPath);
@@ -133,6 +136,7 @@ void MainWindow::connectSignalsAndSlots()
 void MainWindow::setStyleSheet()
 {
     this->setWindowTitle("EazyBuild");
+    ui->bReplace->hide();
 }
 
 bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, DriverType driver, Bit bit, FirmwareVersion fw,
@@ -227,6 +231,9 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
 
     setButtonState(false);
     ui->bClear->click();
+
+    QList<QPair<QString, QString>> pendingCopyTasks;
+
     // ========== GPU Driver Logic ==========
     if (isGPU) {
         // UMD logic (simplified by merging 32/64-bit handling)
@@ -262,7 +269,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
                     // Automatic file copy logic
                     if (isAutomaticallyReplace) {
                         QString srcFile = joinPath({workDir, buildDir, buildconfig, dllName});
-                        cmds.append(generateCopyCmd(srcFile, ui->cbTargetPath->currentText()));
+                        pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
                     }
                 }
             }
@@ -290,11 +297,12 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
             cmds.append(generateCmakeBuildCmd(kmdfoldername, buildconfig));
         }
 
-        m_executor->executeMultiCommandsAsync(cmds, workDir);
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, workDir);
     }
 
     // ========== FantasyPanel Logic ==========
     cmds.clear();
+    pendingCopyTasks.clear();
     if (isPanel) {
         QStringList cmakePanelArgs;
         cmakePanelArgs << "-S." << "-B" << panelfoldername
@@ -311,10 +319,10 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
         cmds.append(generateCmakeBuildCmd(panelfoldername, buildconfig));
         // 4. Automatic file copy if enabled
         if (isAutomaticallyReplace) {
-            cmds.append(generateCopyCmd(srcFile, ui->cbTargetPath->currentText()));
+            pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
         }
 
-        // m_executor->executeMultiCommandsAsync(cmds, panelWorkDir); // Use temporary workDir to avoid modifying original
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, panelWorkDir); // Use temporary workDir to avoid modifying original
     }
 
     return true;
@@ -337,7 +345,9 @@ QString MainWindow::generateCmakeBuildCmd(const QString& buildDir, const QString
 QString MainWindow::generateCopyCmd(const QString& srcFile, const QString& targetPath)
 {
     QString quotedSrc = QString("\"%1\"").arg(srcFile);
-    QString quotedTarget = QString("\"%1\"").arg(targetPath);
+    QString quotedTarget = QString("\"%1/\"").arg(targetPath);
+    quotedSrc.replace("/", "\\");
+    quotedTarget.replace("/", "\\");
     return "copy /y " + quotedSrc + " " + quotedTarget;
 }
 

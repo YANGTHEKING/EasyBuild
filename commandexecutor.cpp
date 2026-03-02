@@ -242,9 +242,14 @@ void CommandExecutor::startNextAsyncCommand()
 
     // All commands executed successfully
     if (m_currentAsyncCmdIdx >= m_asyncCmds.size()) {
+        if(executeCopyCmds(m_pendingCopyTasks))
+        {
+            emit logUpdated(formatRealTimeLog("✅ All commands executed successfully!"), false);
+        }
+
         m_isExecuting = false;
-        emit logUpdated(formatRealTimeLog("✅ All commands executed successfully!"), false);
         emit commandFinished(true, "", "");
+
         return;
     }
 
@@ -263,29 +268,34 @@ void CommandExecutor::startNextAsyncCommand()
 
     // Prepare command execution (platform-specific handling)
     bool isCmakeCmd = currentCmd.startsWith("cmake", Qt::CaseInsensitive);
-    if (isCmakeCmd) {
+    if (isCmakeCmd)
+    {
         QStringList cmakeArgs = parseCmakeArguments(currentCmd);
         QString cmakeProgram = cmakeArgs.takeFirst();
         // Use cmake.exe explicitly on Windows (ensure executable resolution)
-        if (QOperatingSystemVersion::currentType() == QOperatingSystemVersion::Windows) {
+        if (QOperatingSystemVersion::currentType() == QOperatingSystemVersion::Windows)
+        {
             cmakeProgram = "cmake.exe";
         }
         m_process->setProgram(cmakeProgram);
         m_process->setArguments(cmakeArgs);
     }
     // Windows non-CMake commands (via cmd.exe)
-    else if (QOperatingSystemVersion::currentType() == QOperatingSystemVersion::Windows) {
+    else if (QOperatingSystemVersion::currentType() == QOperatingSystemVersion::Windows)
+    {
         m_process->setProgram("cmd.exe");
         m_process->setArguments(QStringList() << "/c" << currentCmd);
     }
     // Linux/macOS non-CMake commands (via bash)
-    else {
+    else
+    {
         m_process->setProgram("bash");
         m_process->setArguments(QStringList() << "-c" << currentCmd);
     }
 
     // Set working directory if valid
-    if (!m_asyncWorkingDir.isEmpty() && QDir(m_asyncWorkingDir).exists()) {
+    if (!m_asyncWorkingDir.isEmpty() && QDir(m_asyncWorkingDir).exists())
+    {
         m_process->setWorkingDirectory(m_asyncWorkingDir);
     }
 
@@ -351,12 +361,14 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
 /**
  * @brief Public entry point for asynchronous command execution (non-blocking)
  * @param commands List of commands to execute (in strict execution order)
+ * @param Path List of files to copy (in strict execution order)
  * @param workingDir Working directory for command execution
  * @note Ensures commands run sequentially (next starts only after previous finishes)
  * @note UI remains fully responsive during execution
  */
-void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, const QString& workingDir)
+void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, const QString& workingDir)
 {
+    m_pendingCopyTasks = pendingCopyTasks;
     // Stop ongoing execution if already running
     if (m_isExecuting) {
         stopExecution();
@@ -378,4 +390,74 @@ void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, con
     emit logUpdated(formatRealTimeLog("🚀 Start executing async commands..."), false);
     // Start first command (non-blocking - returns immediately)
     startNextAsyncCommand();
+}
+
+bool CommandExecutor::executeCopyCmds(QList<QPair<QString, QString>> pendingCopyTasks)
+{
+    for (const auto& task : qAsConst(pendingCopyTasks))
+    {
+        QString srcFile = task.first;
+        QString targetDir = task.second;
+        QString errorMsg;
+
+        QString startLog = QString("📤 Copying file: %1 -> %2").arg(srcFile).arg(targetDir);
+        emit logUpdated(formatRealTimeLog(startLog), false);
+        saveLog(startLog, false);
+        qDebug() << startLog;
+
+        if (!copyFileWithQt(srcFile, targetDir, errorMsg))
+        {
+            QString failLog = QString("❌ Copy failed: %1 (Reason: %2)").arg(srcFile).arg(errorMsg);
+            emit logUpdated(formatRealTimeLog(failLog), true);
+            saveLog(failLog, true);
+            qDebug() << failLog;
+            // Optional
+            // break;
+        }
+        else
+        {
+            QString successLog = QString("✅ Copy success: %1 -> %2").arg(srcFile).arg(targetDir);
+            emit logUpdated(formatRealTimeLog(successLog), false);
+            saveLog(successLog, false);
+            qDebug() << successLog;
+        }
+    }
+    return true;
+}
+
+bool CommandExecutor::copyFileWithQt(const QString& srcFile, const QString& targetDir, QString& errorMsg)
+{
+    QFile src(srcFile);
+    if (!src.exists())
+    {
+        errorMsg = QString("Source file does not exist: %1").arg(srcFile);
+        return false;
+    }
+
+    QDir target(targetDir);
+    if (!target.exists())
+    {
+        if (!target.mkpath(targetDir))
+        {
+            errorMsg = QString("Failed to create target directory: %1").arg(targetDir);
+            return false;
+        }
+    }
+
+    QString targetPath = target.filePath(QFileInfo(srcFile).fileName());
+
+    QFile::remove(targetPath);
+
+    if (src.copy(targetPath))
+    {
+        return true;
+    }
+    else
+    {
+        errorMsg = QString("Qt copy failed: %1 (Source: %2, Target: %3)")
+        .arg(src.errorString())
+            .arg(srcFile)
+            .arg(targetPath);
+        return false;
+    }
 }
