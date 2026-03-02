@@ -528,7 +528,7 @@
               <widget class="QPushButton" name="bManuallyBuild">
                <property name="maximumSize">
                 <size>
-                 <width>60</width>
+                 <width>100</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -549,6 +549,29 @@
           <string>Log</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QGroupBox" name="groupBox_25">
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_21">
+             <item>
+              <widget class="QPushButton" name="bClear">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="bLogFile">
+               <property name="text">
+                <string>Open Log Path</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item>
            <widget class="QTextEdit" name="txtLog">
             <property name="minimumSize">

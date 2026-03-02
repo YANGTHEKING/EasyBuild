@@ -3,6 +3,7 @@
 #include "QMessageBox.h"
 #include <QScrollBar>
 #include <QThread>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -63,6 +64,12 @@ void MainWindow::connectSignalsAndSlots()
     });
     connect(ui->bManuallyBuild, &QPushButton::clicked, this, [=]() {
         buildCmd(m_buildType, m_gpuModel, m_buildConfig, m_driverType, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+    });
+    connect(ui->bClear, &QPushButton::clicked, this, [=]() {
+        ui->txtLog->clear();
+    });
+    connect(ui->bLogFile, &QPushButton::clicked, this, [=]() {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_executor->logFileFolder()));
     });
 
     connect(ui->cbProjectPath, &QComboBox::currentTextChanged, this, &MainWindow::setProjectPath);
@@ -126,7 +133,6 @@ void MainWindow::connectSignalsAndSlots()
 void MainWindow::setStyleSheet()
 {
     this->setWindowTitle("EazyBuild");
-    ui->gbLog->setTitle("Log (" + QDir::currentPath() + ")");
 }
 
 bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, DriverType driver, Bit bit, FirmwareVersion fw,

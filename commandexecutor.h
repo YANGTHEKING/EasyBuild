@@ -49,6 +49,7 @@ public:
     void stopExecution();
 
     QString logFilePath() {return m_logFilePath;};
+    QString logFileFolder() {return m_logFileFolder;};
 signals:
     /**
      * @brief Emitted when all commands finish execution
@@ -147,6 +148,7 @@ private:
 
     QProcess* m_process;          // Single process instance (only one command runs at a time)
     QString m_logFilePath;        // Path to persistent log file
+    QString m_logFileFolder;
     QStringList m_asyncCmds;      // List of commands to execute (preserves input order)
     QString m_asyncWorkingDir;    // Working directory for command execution
     int m_currentAsyncCmdIdx;     // Index of currently executing command (0-based)

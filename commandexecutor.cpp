@@ -16,7 +16,8 @@ CommandExecutor::CommandExecutor(QObject *parent)
 {
     // Generate default log file name with timestamp
     QString defaultLogName = QString("cmd_exec_%1.log").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"));
-    m_logFilePath = QDir::currentPath() + QDir::separator() + defaultLogName;
+    m_logFileFolder = QDir::currentPath();
+    m_logFilePath = m_logFileFolder + "/" + defaultLogName;
 
     // Bind process signals (fully asynchronous, no blocking calls)
     connect(m_process, &QProcess::finished, this, &CommandExecutor::onSingleCommandFinished);
