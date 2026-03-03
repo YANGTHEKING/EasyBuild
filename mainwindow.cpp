@@ -313,7 +313,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
         // 1. Combine Panel path and additional parameters (keep original comment, adjusted logic)
         QString srcFile = joinPath({workDir, panelfoldername, buildconfig, "FantasyPanel.exe"});
         // 2. Update working directory (NOTE: Use temporary variable to avoid polluting original workDir)
-        QString panelWorkDir = joinPath({workDir, "tool", "fantasypanel"});
+        QString panelWorkDir = joinPath({workDir, "tools", "fantasypanel"});
         // 3. Generate CMake commands for Panel (keep original logic)
         cmds.append(cmakePanelConfigureCmd);
         cmds.append(generateCmakeBuildCmd(panelfoldername, buildconfig));
