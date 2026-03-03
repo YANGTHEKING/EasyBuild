@@ -64,8 +64,8 @@ public:
     void connectSignalsAndSlots();
     void setStyleSheet();
     void initUI();
-    bool buildCmd(BuildType btype = AllType, GPUModel gpu = G0M, BuildConfig build = Debug, DriverType driver = AllDriver, Bit bit = Bit64, FirmwareVersion fw = Firmware119,
-                  bool isForceDeleteKMD = false, bool isAutomaticallyReplace = false, bool isUniQ = false, bool isPvr = false, bool isStat = false);
+    bool buildCmd(BuildType btype = AllType, GPUModel gpu = G0M, BuildConfig build = Debug, bool isAutomaticallyReplace = false, DriverType driver = AllDriver, Bit bit = Bit64,
+                  FirmwareVersion fw = Firmware119, bool isForceDeleteKMD = false, bool isUniQ = false, bool isPvr = false, bool isStat = false);
 private slots:
     void on_logUpdated(const QString &logContent, bool isError);
     void onCommandFinished(bool success, const QString &stdoutLog, const QString &stderrLog);

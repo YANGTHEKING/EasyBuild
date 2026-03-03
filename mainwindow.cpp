@@ -39,31 +39,31 @@ void MainWindow::initUI()
 void MainWindow::connectSignalsAndSlots()
 {
     connect(ui->bG0MBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G0M, m_buildConfig, AllDriver, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G0M, m_buildConfig, m_isAutoReplace, AllDriver, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG0MUMDBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G0M, m_buildConfig, UMD, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G0M, m_buildConfig, m_isAutoReplace, UMD, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG0MKMDBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G0M, m_buildConfig, KMD, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G0M, m_buildConfig, m_isAutoReplace, KMD, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG3Build, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G3, m_buildConfig, AllDriver, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G3, m_buildConfig, m_isAutoReplace, AllDriver, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG3UMDBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G3, m_buildConfig, UMD, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G3, m_buildConfig, m_isAutoReplace, UMD, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG3KMDBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(GPUDriver, G3, m_buildConfig, KMD, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(GPUDriver, G3, m_buildConfig, m_isAutoReplace, KMD, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bG0MPanelBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(FantasyPanel, G0M, m_buildConfig);
+        buildCmd(FantasyPanel, G0M, m_buildConfig, m_isAutoReplace);
     });
     connect(ui->bG3PanelBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(FantasyPanel, G3, m_buildConfig);
+        buildCmd(FantasyPanel, G3, m_buildConfig, m_isAutoReplace);
     });
     connect(ui->bManuallyBuild, &QPushButton::clicked, this, [=]() {
-        buildCmd(m_buildType, m_gpuModel, m_buildConfig, m_driverType, m_bit, m_fwversion, m_isForceDelKMD, m_isAutoReplace, m_uniq, m_pvr, m_stat);
+        buildCmd(m_buildType, m_gpuModel, m_buildConfig, m_isAutoReplace, m_driverType, m_bit, m_fwversion, m_isForceDelKMD, m_uniq, m_pvr, m_stat);
     });
     connect(ui->bClear, &QPushButton::clicked, this, [=]() {
         ui->txtLog->clear();
@@ -139,8 +139,8 @@ void MainWindow::setStyleSheet()
     ui->bReplace->hide();
 }
 
-bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, DriverType driver, Bit bit, FirmwareVersion fw,
-                          bool isForceDeleteKMD, bool isAutomaticallyReplace, bool isUniQ, bool isPvr, bool isStat)
+bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool isAutomaticallyReplace, DriverType driver,
+                           Bit bit, FirmwareVersion fw, bool isForceDeleteKMD, bool isUniQ, bool isPvr, bool isStat)
 {
     QStringList     cmds;
     QString         workDir;
@@ -309,11 +309,10 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, Driv
                        << "-D" << soctype
                        << "-G" << cmakeGenerator; // Generator as independent parameter (no quotes)
         QString cmakePanelConfigureCmd = "cmake " + cmakePanelArgs.join(" ");
-
-        // 1. Combine Panel path and additional parameters (keep original comment, adjusted logic)
-        QString srcFile = joinPath({workDir, panelfoldername, buildconfig, "FantasyPanel.exe"});
-        // 2. Update working directory (NOTE: Use temporary variable to avoid polluting original workDir)
+        // 1. Update working directory (NOTE: Use temporary variable to avoid polluting original workDir)
         QString panelWorkDir = joinPath({workDir, "tools", "fantasypanel"});
+        // 2. Combine Panel path and additional parameters (keep original comment, adjusted logic)
+        QString srcFile = joinPath({panelWorkDir, panelfoldername, buildconfig, "FantasyPanel.exe"});
         // 3. Generate CMake commands for Panel (keep original logic)
         cmds.append(cmakePanelConfigureCmd);
         cmds.append(generateCmakeBuildCmd(panelfoldername, buildconfig));
