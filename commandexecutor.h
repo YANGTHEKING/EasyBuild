@@ -32,7 +32,7 @@ public:
      * @param Path List of files to delete (in strict execution order)
      * @param workingDir Working directory for command execution (empty = current directory)
      */
-    void executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir = "");
+    void executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir = "", bool isRemote = false);
 
     /**
      * @brief Set log file path for persistent log storage
@@ -45,6 +45,12 @@ public:
      * @param maxLines Maximum allowed log lines
      */
     void setMaxLogLines(int maxLines) { m_maxLogLines = maxLines; }
+
+
+    void setRemoteHost(const QString& host) { m_remoteHost = host; }
+
+
+    void setRemotePath(const QString& path) { m_remotePath = path; }
 
     /**
      * @brief Stop current command execution immediately
@@ -166,9 +172,12 @@ private:
     QString m_currentCmdStderr;   // Stderr buffer for current command
     QString m_asyncWorkingDir;    // Working directory for command execution
     QStringList m_asyncCmds;      // List of commands to execute (preserves input order)
+    QString m_remoteHost;         // Remote host
+    QString m_remotePath;         // Remote target path
     int m_currentAsyncCmdIdx;     // Index of currently executing command (0-based)
     int m_maxLogLines;            // Maximum log lines (prevent UI/memory issues)
     bool m_isExecuting;           // Execution state flag (prevent concurrent execution)
+    bool m_isRemote;
     QList<QPair<QString, QString>> m_pendingCopyTasks;
 };
 

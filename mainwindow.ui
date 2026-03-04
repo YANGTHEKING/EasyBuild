@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1048</width>
-    <height>663</height>
+    <height>739</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,7 +259,7 @@
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="text">
-                   <string>Project Path</string>
+                   <string>Local Project Path</string>
                   </property>
                  </widget>
                 </item>
@@ -291,7 +291,7 @@
                 <item>
                  <widget class="QLabel" name="label_2">
                   <property name="text">
-                   <string>Target Path</string>
+                   <string>Local Target Path</string>
                   </property>
                  </widget>
                 </item>
@@ -308,6 +308,39 @@
                   </property>
                   <property name="text">
                    <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_26">
+               <property name="title">
+                <string/>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_22">
+                <item>
+                 <widget class="QCheckBox" name="cbRemoteDeploy">
+                  <property name="text">
+                   <string>Enable Remote Deployment</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bRemoteConfig">
+                  <property name="text">
+                   <string>Remote Config</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QTextEdit" name="labRemoteStatus">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>25</height>
+                   </size>
                   </property>
                  </widget>
                 </item>

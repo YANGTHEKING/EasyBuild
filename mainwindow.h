@@ -6,6 +6,7 @@
 #include "FilePathSelector.h"
 #include "CommandExecutor.h"
 #include "qtextedit.h"
+#include "remoteconfigdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -69,12 +70,17 @@ public:
 private slots:
     void on_logUpdated(const QString &logContent, bool isError);
     void onCommandFinished(bool success, const QString &stdoutLog, const QString &stderrLog);
+    void setRemoteDeploy(bool checked);  // Enable/disable remote deployment
+    void onRemoteConfigClicked();        // Open remote configuration dialog
 private:
     FilePathSelector *m_projectpathselector = nullptr;
     FilePathSelector *m_targetpathselector  = nullptr;
     CommandExecutor  *m_executor            = nullptr;
     QString          m_projctPath           = "";
     QString          m_targetPath           = "";
+    QString          m_remoteHost;                     // Remote host
+    QString          m_remotePath;                     // Remote target path
+    bool             m_isRemoteDeploy       = false;   // Whether to enable remote deployment
     bool             m_isForceDelKMD        = false;
     bool             m_isAutoReplace        = false;
     bool             m_uniq                 = false;
@@ -107,6 +113,7 @@ private:
     QString generateCmakeConfigureCmd(const QString &buildDir, const QString &extraParams = "");
     QString generateCmakeBuildCmd(const QString &buildDir, const QString &buildConfig);
     QString generateCopyCmd(const QString &srcFile, const QString &targetPath);
+    QString generateRemoteCopyCmd(const QString &srcFile, const QString &remotePath);
     QString joinPath(const QStringList &parts);
 
     Ui::MainWindow *ui;

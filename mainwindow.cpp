@@ -34,6 +34,11 @@ void MainWindow::initUI()
 
     m_configButtonGroup->addButton(ui->rbDebug, 0);
     m_configButtonGroup->addButton(ui->rbRelease, 1);
+
+    ui->cbRemoteDeploy->setChecked(m_isRemoteDeploy);
+    ui->labRemoteStatus->hide();
+
+    ui->bRemoteConfig->setEnabled(false);
 }
 
 void MainWindow::connectSignalsAndSlots()
@@ -131,6 +136,8 @@ void MainWindow::connectSignalsAndSlots()
         ui->statusbar->showMessage(QString("Progress: %1/%2 - Executing: %3").arg(current).arg(total).arg(cmd));
     });
 
+    connect(ui->cbRemoteDeploy, &QCheckBox::clicked, this, &MainWindow::setRemoteDeploy);
+    connect(ui->bRemoteConfig, &QPushButton::clicked, this, &MainWindow::onRemoteConfigClicked);
 }
 
 void MainWindow::setStyleSheet()
@@ -165,6 +172,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
     bool            isKMD      = driver != UMD;
     bool            is32Bit    = bit    != Bit64;
     bool            is64Bit    = bit    != Bit32;
+    bool            isRemote   = m_isRemoteDeploy && !m_remotePath.isEmpty();
 
     if(!FilePathSelector::isPathValid(m_projctPath))
     {
@@ -268,7 +276,8 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
                     cmds.append(cmakeConfigureCmd);
                     cmds.append(generateCmakeBuildCmd(buildDir, buildconfig));
                     // Automatic file copy logic
-                    if (isAutomaticallyReplace) {
+                    if (isAutomaticallyReplace)
+                    {
                         QString srcFile = joinPath({workDir, buildDir, buildconfig, dllName});
                         pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
                     }
@@ -299,7 +308,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
             cmds.append(generateCmakeBuildCmd(kmdfoldername, buildconfig));
         }
 
-        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, workDir);
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, workDir, isRemote);
     }
 
     // ========== FantasyPanel Logic ==========
@@ -321,10 +330,13 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
         cmds.append(generateCmakeBuildCmd(panelfoldername, buildconfig));
         // 4. Automatic file copy if enabled
         if (isAutomaticallyReplace) {
-            pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
+            if (isAutomaticallyReplace)
+            {
+                pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
+            }
         }
 
-        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, panelWorkDir); // Use temporary workDir to avoid modifying original
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, panelWorkDir, isRemote); // Use temporary workDir to avoid modifying original
     }
 
     return true;
@@ -351,6 +363,16 @@ QString MainWindow::generateCopyCmd(const QString& srcFile, const QString& targe
     quotedSrc.replace("/", "\\");
     quotedTarget.replace("/", "\\");
     return "copy /y " + quotedSrc + " " + quotedTarget;
+}
+
+// Add: Generate remote copy command (based on robocopy, supports network paths)
+QString MainWindow::generateRemoteCopyCmd(const QString& srcFile, const QString& remotePath)
+{
+    // robocopy advantages: supports network paths, automatic retry, ignores temporary permission issues
+    QString quotedSrc = QString("\"%1\"").arg(srcFile);
+    QString quotedRemote = QString("\"%1\"").arg(remotePath);
+    // /Y: Overwrite without confirmation /R:1: Retry 1 time /W:1: Retry interval 1 second
+    return QString("robocopy %1 %2 /Y /R:1 /W:1").arg(quotedSrc).arg(quotedRemote);
 }
 
 QString MainWindow::joinPath(const QStringList& parts)
@@ -459,6 +481,9 @@ void MainWindow::setButtonState(bool isEnable)
 
     ui->rbDebug->setEnabled(isEnable);
     ui->rbRelease->setEnabled(isEnable);
+
+    ui->cbRemoteDeploy->setEnabled(isEnable);
+    ui->bRemoteConfig->setEnabled(isEnable && ui->cbRemoteDeploy->isChecked());
 }
 
 void MainWindow::setProjectPath(const QString& path)
@@ -543,5 +568,35 @@ void MainWindow::setFirmwareVersion(int index)
     else
     {
         ui->cbUNIQ->setEnabled(true);
+    }
+}
+
+// Enable/disable remote deployment
+void MainWindow::setRemoteDeploy(bool checked)
+{
+    m_isRemoteDeploy = checked;
+    ui->bRemoteConfig->setEnabled(checked);
+    ui->labRemoteStatus->setVisible(checked);
+    if (checked && !m_remotePath.isEmpty()) {
+        ui->labRemoteStatus->setText(QString("Remote: %1").arg(m_remotePath));
+    }
+}
+
+// Open remote configuration dialog
+void MainWindow::onRemoteConfigClicked()
+{
+    RemoteConfigDialog dlg(this);
+    if (dlg.exec() == QDialog::Accepted) {
+        m_remoteHost = dlg.remoteHost();
+
+        m_remoteHost = m_remoteHost.trimmed();
+        if (m_remoteHost.startsWith("\\\\")) {
+            m_remoteHost = m_remoteHost.mid(2);
+        }
+
+        m_remotePath = dlg.remotePath();
+        m_executor->setRemoteHost(m_remoteHost);
+        m_executor->setRemotePath(m_remotePath);
+        ui->labRemoteStatus->setText(QString("Remote: %1").arg(m_remotePath));
     }
 }

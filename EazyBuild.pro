@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,12 +12,14 @@ SOURCES += \
     commandexecutor.cpp \
     filepathselector.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    remoteconfigdialog.cpp
 
 HEADERS += \
     commandexecutor.h \
     filepathselector.h \
-    mainwindow.h
+    mainwindow.h \
+    remoteconfigdialog.h
 
 FORMS += \
     mainwindow.ui

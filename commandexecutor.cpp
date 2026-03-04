@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QRegularExpression>
+#include "remoteconfigdialog.h"
 
 /**
  * @brief Constructor: Initialize process and default settings
@@ -75,7 +76,8 @@ QString CommandExecutor::formatRealTimeLog(const QString& content)
     QString timestamp = QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss]");
     QStringList lines = content.split("\n", Qt::SkipEmptyParts);
     QStringList formattedLines;
-    for (const QString& line : lines) {
+    for (const QString& line : lines)
+    {
         formattedLines.append(timestamp + " " + line);
     }
     return formattedLines.join("\n") + "\n";
@@ -92,7 +94,8 @@ QString CommandExecutor::extractErrorsFromStdout(const QString& stdoutContent)
     if (stdoutContent.isEmpty()) return "";
 
     // Predefined error keywords (matches isCmakeReallyFailed logic)
-    QStringList errorKeywords = {
+    QStringList errorKeywords =
+        {
         "error",          // Generic error (C/C++ compiler)
         "fatal error",    // Fatal compilation error
         "c2146",          // Specific syntax error code you mentioned
@@ -107,21 +110,25 @@ QString CommandExecutor::extractErrorsFromStdout(const QString& stdoutContent)
     QStringList errorLines;
 
     // Iterate each line to check for error keywords (case-insensitive)
-    for (const QString& line : lines) {
+    for (const QString& line : lines)
+    {
         QString trimmedLine = line.trimmed();
         QString lowerLine = trimmedLine.toLower(); // Convert to lowercase for case-insensitive match
 
         // Check if line contains ANY of the error keywords
         bool isErrorLine = false;
-        for (const QString& keyword : errorKeywords) {
-            if (lowerLine.contains(keyword.toLower())) {
+        for (const QString& keyword : errorKeywords)
+        {
+            if (lowerLine.contains(keyword.toLower()))
+            {
                 isErrorLine = true;
                 break; // Stop checking keywords once match found
             }
         }
 
         // Add to error lines if keyword matched (avoid empty lines)
-        if (isErrorLine && !trimmedLine.isEmpty()) {
+        if (isErrorLine && !trimmedLine.isEmpty())
+        {
             errorLines.append(trimmedLine);
         }
     }
@@ -141,16 +148,20 @@ QString CommandExecutor::extractErrorsFromStdout(const QString& stdoutContent)
 void CommandExecutor::saveLog(const QString& content, bool isError)
 {
     QFile logFile(m_logFilePath);
-    if (!logFile.open(QIODevice::Append | QIODevice::Text)) {
+    if (!logFile.open(QIODevice::Append | QIODevice::Text))
+    {
         qWarning() << "Failed to open log file:" << logFile.errorString();
         emit logUpdated(formatRealTimeLog("Failed to open log file: " + logFile.errorString()), true);
         return;
     }
 
     QTextStream stream(&logFile);
-    if (isError) {
+    if (isError)
+    {
         stream << "[ERROR] " << content << "\n";
-    } else {
+    }
+    else
+    {
         stream << "[INFO] " << content << "\n";
     }
     logFile.close();
@@ -199,20 +210,23 @@ QStringList CommandExecutor::parseCmakeArguments(const QString& cmd)
     int pos = 0;
     int len = trimmedCmd.length();
 
-    while (pos < len) {
+    while (pos < len)
+    {
         // Skip consecutive whitespace
         while (pos < len && trimmedCmd[pos].isSpace()) pos++;
         if (pos >= len) break;
 
         // Special handling for -G parameter (preserve full generator name with spaces)
-        if (trimmedCmd.mid(pos, 2) == "-G" && (pos + 2 == len || trimmedCmd[pos + 2].isSpace())) {
+        if (trimmedCmd.mid(pos, 2) == "-G" && (pos + 2 == len || trimmedCmd[pos + 2].isSpace()))
+        {
             result << "-G";
             pos += 2;
             // Skip whitespace after -G
             while (pos < len && trimmedCmd[pos].isSpace()) pos++;
             // Extract full generator name (until next parameter starting with '-')
             int generatorStart = pos;
-            while (pos < len) {
+            while (pos < len)
+            {
                 if (trimmedCmd[pos] == '-' && (pos == 0 || trimmedCmd[pos-1].isSpace())) break;
                 pos++;
             }
@@ -221,7 +235,8 @@ QStringList CommandExecutor::parseCmakeArguments(const QString& cmd)
             result << generator;
         }
         // Normal parameters (-D/-S/-B etc.) - split by whitespace
-        else {
+        else
+        {
             int argStart = pos;
             while (pos < len && !trimmedCmd[pos].isSpace()) pos++;
             QString arg = trimmedCmd.mid(argStart, pos - argStart);
@@ -243,7 +258,8 @@ void CommandExecutor::startNextAsyncCommand()
     m_currentCmdStderr.clear();
 
     // All commands executed successfully
-    if (m_currentAsyncCmdIdx >= m_asyncCmds.size()) {
+    if (m_currentAsyncCmdIdx >= m_asyncCmds.size())
+    {
         if(executeCopyCmds(m_pendingCopyTasks))
         {
             emit logUpdated(formatRealTimeLog("✅ All commands executed successfully!"), false);
@@ -258,7 +274,8 @@ void CommandExecutor::startNextAsyncCommand()
     // Get current command (by index - preserves execution order)
     QString currentCmd = m_asyncCmds[m_currentAsyncCmdIdx].trimmed();
     // Skip empty commands
-    if (currentCmd.isEmpty()) {
+    if (currentCmd.isEmpty())
+    {
         m_currentAsyncCmdIdx++;
         startNextAsyncCommand();
         return;
@@ -317,7 +334,8 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
 
     // Merge compile errors from stdout to stderr (for unified error detection)
     QString errorsFromStdout = extractErrorsFromStdout(m_currentCmdStdout);
-    if (!errorsFromStdout.isEmpty()) {
+    if (!errorsFromStdout.isEmpty())
+    {
         if (!m_currentCmdStderr.isEmpty()) m_currentCmdStderr += "\n";
         m_currentCmdStderr += "[Extracted from stdout] " + errorsFromStdout;
     }
@@ -336,7 +354,8 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
     bool CmakeFailed = isCmakeCmd && isCmakeReallyFailed(m_currentCmdStderr);
 
     // CMake failure: terminate execution immediately
-    if (CmakeFailed) {
+    if (CmakeFailed)
+    {
         m_isExecuting = false;
         QString errorMsg = QString("❌ CMake failed: %1").arg(m_currentCmdStderr);
         emit logUpdated(formatRealTimeLog(errorMsg), true);
@@ -346,7 +365,8 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
     }
 
     // Non-CMake command failure: terminate execution
-    if (exitCode != 0 || exitStatus != QProcess::NormalExit) {
+    if (exitCode != 0 || exitStatus != QProcess::NormalExit)
+    {
         m_isExecuting = false;
         QString errorMsg = QString("❌ Command failed: %1\nError: %2").arg(currentCmd, m_currentCmdStderr);
         emit logUpdated(formatRealTimeLog(errorMsg), true);
@@ -369,16 +389,19 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
  * @note Ensures commands run sequentially (next starts only after previous finishes)
  * @note UI remains fully responsive during execution
  */
-void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir)
+void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir, bool isRemote)
 {
+    m_isRemote = isRemote;
     m_pendingCopyTasks = pendingCopyTasks;
     // Stop ongoing execution if already running
-    if (m_isExecuting) {
+    if (m_isExecuting)
+    {
         stopExecution();
     }
 
     // Validate command list
-    if (commands.isEmpty()) {
+    if (commands.isEmpty())
+    {
         emit logUpdated(formatRealTimeLog("❌ Command list is empty!"), true);
         emit commandFinished(false, "", "Command list is empty");
         return;
@@ -436,6 +459,9 @@ bool CommandExecutor::executeCopyCmds(QList<QPair<QString, QString>> pendingCopy
 bool CommandExecutor::copyFileWithQt(const QString& srcFile, const QString& targetDir, QString& errorMsg)
 {
     QFile src(srcFile);
+    QFileInfo fileInfo(src);
+    QString filename = fileInfo.fileName();
+
     if (!src.exists())
     {
         errorMsg = QString("Source file does not exist: %1").arg(srcFile);
@@ -448,6 +474,23 @@ bool CommandExecutor::copyFileWithQt(const QString& srcFile, const QString& targ
         if (!target.mkpath(targetDir))
         {
             errorMsg = QString("Failed to create target directory: %1").arg(targetDir);
+            return false;
+        }
+    }
+
+    if (m_isRemote)
+    {
+        RemoteConfigDialog dlg;
+        if (dlg.sendFileToRemote(m_remoteHost, 9999, srcFile, m_remotePath + "\\" + filename))
+        {
+            return true;
+        }
+        else
+        {
+            errorMsg = QString("Qt copy failed: %1 (Source: %2, Target: %3)")
+            .arg(src.errorString())
+                .arg(srcFile)
+                .arg(m_remotePath);
             return false;
         }
     }
