@@ -362,11 +362,12 @@ void CommandExecutor::onSingleCommandFinished(int exitCode, QProcess::ExitStatus
  * @brief Public entry point for asynchronous command execution (non-blocking)
  * @param commands List of commands to execute (in strict execution order)
  * @param Path List of files to copy (in strict execution order)
+ * @param Path List of files to delete (in strict execution order)
  * @param workingDir Working directory for command execution
  * @note Ensures commands run sequentially (next starts only after previous finishes)
  * @note UI remains fully responsive during execution
  */
-void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, const QString& workingDir)
+void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir)
 {
     m_pendingCopyTasks = pendingCopyTasks;
     // Stop ongoing execution if already running
@@ -379,6 +380,11 @@ void CommandExecutor::executeMultiCommandsAsync(const QStringList& commands, QLi
         emit logUpdated(formatRealTimeLog("❌ Command list is empty!"), true);
         emit commandFinished(false, "", "Command list is empty");
         return;
+    }
+
+    if (!pendingDelTasks.empty())
+    {
+        executeDelCmds(pendingDelTasks);
     }
 
     // Initialize async execution state
@@ -458,6 +464,110 @@ bool CommandExecutor::copyFileWithQt(const QString& srcFile, const QString& targ
         .arg(src.errorString())
             .arg(srcFile)
             .arg(targetPath);
+        return false;
+    }
+}
+
+bool CommandExecutor::executeDelCmds(QList<QString> pendingDelTasks)
+{
+    bool allSuccess = true; // Track overall success status
+    for (const auto& targetDir : qAsConst(pendingDelTasks))
+    {
+        QString errorMsg;
+        QString startLog = QString("🗑️ Deleting directory: %1").arg(targetDir);
+        emit logUpdated(formatRealTimeLog(startLog), false);
+        saveLog(startLog, false);
+        qDebug() << startLog;
+
+        if (!deleteFileWithQt(targetDir, errorMsg))
+        {
+            QString failLog = QString("❌ Delete failed: %1 (Reason: %2)").arg(targetDir).arg(errorMsg);
+            emit logUpdated(formatRealTimeLog(failLog), true);
+            saveLog(failLog, true);
+            qDebug() << failLog;
+            allSuccess = false; // Mark overall status as failed
+            // break; // Optional: Stop on first failure
+        }
+        else
+        {
+            QString successLog = QString("✅ Delete success: %1").arg(targetDir);
+            emit logUpdated(formatRealTimeLog(successLog), false);
+            saveLog(successLog, false);
+            qDebug() << successLog;
+        }
+    }
+    return allSuccess; // Return overall success status
+}
+
+// Helper function: Recursively delete directory (compatible with Qt 4.x)
+bool CommandExecutor::deleteDirRecursively(const QDir& dir)
+{
+    QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
+    for (const QFileInfo& entry : entries)
+    {
+        if (entry.isFile())
+        {
+            QFile file(entry.absoluteFilePath());
+            if (!file.remove()) return false;
+        }
+        else if (entry.isDir())
+        {
+            if (!deleteDirRecursively(QDir(entry.absoluteFilePath()))) return false;
+        }
+    }
+    return dir.rmdir(dir.absolutePath());
+}
+
+// Updated deleteFileWithQt with Qt 4.x compatibility (comments in English)
+bool CommandExecutor::deleteFileWithQt(const QString& targetDir, QString& errorMsg)
+{
+    // 1. Check if the target directory exists
+    QDir dir(targetDir);
+    if (!dir.exists())
+    {
+        errorMsg = QString("Target directory does not exist: %1").arg(targetDir);
+        return false;
+    }
+
+    // 2. Attempt to delete the directory recursively (Qt 4.x compatible implementation)
+    if (deleteDirRecursively(dir))
+    {
+        return true;
+    }
+    else
+    {
+        // 3. Capture detailed error information for deletion failure
+        // Supplement: Traverse the directory to attempt deleting items individually to locate the exact failure cause
+        QString detailError = "Unknown error";
+        QFileInfoList entries = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+        for (const QFileInfo& entry : entries)
+        {
+            QFile file(entry.absoluteFilePath());
+            QDir subDir(entry.absoluteFilePath());
+
+            if (entry.isFile())
+            {
+                if (!file.remove())
+                {
+                    detailError = QString("Failed to delete file: %1 (Reason: %2)")
+                    .arg(entry.absoluteFilePath())
+                        .arg(file.errorString());
+                    break;
+                }
+            }
+            else if (entry.isDir())
+            {
+                if (!deleteDirRecursively(QDir(entry.absoluteFilePath())))
+                {
+                    detailError = QString("Failed to delete subdirectory: %1").arg(entry.absoluteFilePath());
+                    break;
+                }
+            }
+        }
+
+        errorMsg = QString("Qt delete directory failed: %1 (Target: %2)")
+                       .arg(detailError)
+                       .arg(targetDir);
         return false;
     }
 }

@@ -1,6 +1,7 @@
 #ifndef COMMANDEXECUTOR_H
 #define COMMANDEXECUTOR_H
 
+#include "qdir.h"
 #include <QObject>
 #include <QProcess>
 #include <QStringList>
@@ -27,10 +28,11 @@ public:
     /**
      * @brief Execute multiple commands asynchronously (non-blocking)
      * @param commands List of commands to execute (in execution order)
- * @param Path List of files to copy (in strict execution order)
+     * @param Path List of files to copy (in strict execution order)
+     * @param Path List of files to delete (in strict execution order)
      * @param workingDir Working directory for command execution (empty = current directory)
      */
-    void executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, const QString& workingDir = "");
+    void executeMultiCommandsAsync(const QStringList& commands, QList<QPair<QString, QString>> pendingCopyTasks, QList<QString> pendingDelTasks, const QString& workingDir = "");
 
     /**
      * @brief Set log file path for persistent log storage
@@ -150,6 +152,12 @@ private:
     bool copyFileWithQt(const QString &srcFile, const QString &targetDir, QString &errorMsg);
 
     bool executeCopyCmds(QList<QPair<QString, QString> > pendingCopyTasks);
+
+    bool deleteFileWithQt(const QString &targetDir, QString &errorMsg);
+
+    bool deleteDirRecursively(const QDir &dir);
+
+    bool executeDelCmds(QList<QString> pendingDelTasks);
 
     QProcess* m_process;          // Single process instance (only one command runs at a time)
     QString m_logFilePath;        // Path to persistent log file

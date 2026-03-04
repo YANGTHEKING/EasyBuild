@@ -233,6 +233,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
     ui->bClear->click();
 
     QList<QPair<QString, QString>> pendingCopyTasks;
+    QList<QString> pendingDelTasks;
 
     // ========== GPU Driver Logic ==========
     if (isGPU) {
@@ -279,7 +280,8 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
         if (isKMD) {
             // Force delete KMD directory if enabled
             if (isForceDeleteKMD) {
-                cmds.append(QString("rd /s /q \"%1\"").arg(kmdfoldername));
+                QString KmdFolder = workDir + "/" + kmdfoldername;
+                pendingDelTasks.append(KmdFolder);
             }
             QStringList cmakeKmdArgs;
             cmakeKmdArgs << "-S." << "-B" << kmdfoldername
@@ -297,12 +299,13 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
             cmds.append(generateCmakeBuildCmd(kmdfoldername, buildconfig));
         }
 
-        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, workDir);
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, workDir);
     }
 
     // ========== FantasyPanel Logic ==========
     cmds.clear();
     pendingCopyTasks.clear();
+    pendingDelTasks.clear();
     if (isPanel) {
         QStringList cmakePanelArgs;
         cmakePanelArgs << "-S." << "-B" << panelfoldername
@@ -321,7 +324,7 @@ bool MainWindow::buildCmd(BuildType btype, GPUModel gpu, BuildConfig build, bool
             pendingCopyTasks.append(qMakePair(srcFile, m_targetPath));
         }
 
-        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, panelWorkDir); // Use temporary workDir to avoid modifying original
+        m_executor->executeMultiCommandsAsync(cmds, pendingCopyTasks, pendingDelTasks, panelWorkDir); // Use temporary workDir to avoid modifying original
     }
 
     return true;
