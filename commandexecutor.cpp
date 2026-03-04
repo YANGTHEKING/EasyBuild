@@ -169,7 +169,8 @@ bool CommandExecutor::isCmakeReallyFailed(const QString& stderrLog)
     // Check error keywords in combined stderr (including extracted errors)
     QString lowerStderr = stderrLog.toLower();
 
-    QStringList errorKeywords = {
+    QStringList errorKeywords =
+        {
         "error",          // Generic error (C/C++ compiler)
         "fatal error",    // Fatal compilation error
         "c2146",          // Specific syntax error code you mentioned
@@ -179,8 +180,9 @@ bool CommandExecutor::isCmakeReallyFailed(const QString& stderrLog)
         "undefined reference" // Link error (Linux)
     };
 
-    for (const QString& keyword : errorKeywords) {
-        if (lowerStderr.contains(keyword)) return true;
+    for (const QString& keyword : errorKeywords)
+    {
+        if (lowerStderr.contains(keyword) && !lowerStderr.contains("error.cpp")) return true;
     }
     return false;
 }
