@@ -155,15 +155,39 @@ QString RemoteConfigDialog::getQualifiedUsername(const QString& inputHost, const
 // Test remote server connection and file transfer functionality
 void RemoteConfigDialog::onTestConnection()
 {
-    QString fileToSend = "C:/share/fantumd64.dll";
-    // Remote IP (10.40.63.202) + port (9999, matches receiver's listening port)
-    bool success = sendFileToRemote("10.40.63.121", 9999, fileToSend, "C:/Users/innosilicon/DeskTop/test/fantumd64.dll");
 
-    // Optional: Update UI or log transfer result
-    if (success) {
-        qDebug() << "File transfer completed successfully";
+    // Remote host configuration (IP + port)
+    QString remoteIp = remoteHost();   // Remote host IP
+    remoteIp = remoteIp.trimmed();
+    if (remoteIp.startsWith("\\\\")) {
+        remoteIp = remoteIp.mid(2);
+    }
+
+    quint16 remotePort = 9999;         // Matches receiver's listening port
+    int connectTimeout = 5000;         // Connection timeout (5 seconds)
+
+    // Create TCP socket for connection test
+    QTcpSocket socket;
+    socket.connectToHost(remoteIp, remotePort);
+
+    // Wait for connection (blocking with timeout, safe for UI thread in dialog)
+    bool isConnected = socket.waitForConnected(connectTimeout);
+
+    // Optional: Update UI or log connection result
+    if (isConnected) {
+        QMessageBox::information(this, "Success",
+                                 QString("Remote server connection test succeeded: %1 : %2")
+                                     .arg(remoteIp).arg(remotePort));
+        // Close the connection immediately after test
+        socket.disconnectFromHost();
+        if (socket.state() != QTcpSocket::UnconnectedState) {
+            socket.waitForDisconnected(1000);
+        }
     } else {
-        qDebug() << "File transfer failed";
+        // Output detailed error info for troubleshooting
+        QMessageBox::critical(this, "Failed",
+                              QString("Remote server connection test failed: %1 : %2\nError code: %3\nError info: %4")
+                                  .arg(remoteIp).arg(remotePort).arg(socket.error()).arg(socket.errorString()));
     }
 }
 
